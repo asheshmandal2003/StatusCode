@@ -22,8 +22,8 @@ const Profile = () => {
     district: "",
     state: "",
     zipCode: "",
-    latitude: 0,
-    longitude: 0,
+    latitude: "",
+    longitude: "",
     dateofBirth: "",
   });
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,6 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch profile data if it exists
     const fetchProfile = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/profile`);
@@ -46,16 +45,21 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProfileData({ ...profileData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData({ ...profileData, [name]: value });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData({ ...profileData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       await axios.post(`${process.env.REACT_APP_API_URL}/user/profile`, profileData);
-      // Redirect to the home page or main dashboard after completing the profile
       navigate("/dashboard");
     } catch (err) {
       setError("Failed to save profile data.");
@@ -114,7 +118,7 @@ const Profile = () => {
             label="Blood Group"
             name="bloodGroup"
             value={profileData.bloodGroup}
-            onChange={handleChange}
+            onChange={handleSelectChange}
           >
             <MenuItem value="A_POSITIVE">A+</MenuItem>
             <MenuItem value="B_POSITIVE">B+</MenuItem>
@@ -125,7 +129,90 @@ const Profile = () => {
             <MenuItem value="O_NEGATIVE">O-</MenuItem>
             <MenuItem value="AB_NEGATIVE">AB-</MenuItem>
           </TextField>
-          {/* Add other profile fields in a similar manner */}
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="address"
+            label="Address"
+            name="address"
+            value={profileData.address}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="city"
+            label="City"
+            name="city"
+            value={profileData.city}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="district"
+            label="District"
+            name="district"
+            value={profileData.district}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="state"
+            label="State"
+            name="state"
+            value={profileData.state}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="zipCode"
+            label="Zip Code"
+            name="zipCode"
+            value={profileData.zipCode}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="latitude"
+            label="Latitude"
+            name="latitude"
+            value={profileData.latitude}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="longitude"
+            label="Longitude"
+            name="longitude"
+            value={profileData.longitude}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="dateofBirth"
+            label="Date of Birth"
+            name="dateofBirth"
+            type="date"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={profileData.dateofBirth}
+            onChange={handleChange}
+          />
           <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 3, mb: 2 }}>
             {loading ? <CircularProgress size={24} /> : "Complete Profile"}
           </Button>
