@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   TextField,
   Button,
@@ -15,52 +16,28 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import axios from "axios";
 
 const Register = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setEmailError("");
-    setPasswordError("");
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email("Please enter a valid email address")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters long")
+      .required("Password is required"),
+  });
 
-    // Basic client-side validation
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      setEmailError("Please enter a valid email address.");
-      return;
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
     }
-    if (!password || password.length < 6) {
-      setPasswordError("Password must be at least 6 characters.");
-      return;
-    }
-
-    try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/auth/register`, {
-        firstName,
-        lastName,
-        email,
-        password,
-      });
-      navigate("/login");
-    } catch (err) {
-      setError("Error creating account. Please try again.");
-    }
-  };
+  });
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+  const handleMouseDownPassword = (event) => event.preventDefault();
 
   return (
     <Container component="main" maxWidth="xs">
@@ -75,57 +52,37 @@ const Register = () => {
         <Typography component="h1" variant="h5">
           Register
         </Typography>
-        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-          Please fill in the form below to create a new account. Ensure that
-          your password is at least 6 characters long.
-        </Typography>
         <form
-          onSubmit={handleSubmit}
+          onSubmit={formik.handleSubmit}
           style={{ width: "100%", marginTop: "1rem" }}
         >
           <TextField
             variant="outlined"
             margin="normal"
-            required
-            fullWidth
-            id="firstName"
-            label="First Name"
-            name="firstName"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="lastName"
-            label="Last Name"
-            name="lastName"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
             fullWidth
             id="email"
             label="Email Address"
             name="email"
             autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            helperText={emailError}
-            error={!!emailError}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
           />
-          <FormControl variant="outlined" fullWidth margin="normal">
+          <FormControl
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            error={formik.touched.password && Boolean(formik.errors.password)}
+          >
             <InputLabel htmlFor="password">Password</InputLabel>
             <OutlinedInput
               id="password"
               type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
@@ -140,15 +97,10 @@ const Register = () => {
               }
               label="Password"
             />
-            <FormHelperText error={!!passwordError}>
-              {passwordError}
+            <FormHelperText>
+              {formik.touched.password && formik.errors.password}
             </FormHelperText>
           </FormControl>
-          {error && (
-            <Typography color="error" sx={{ mt: 1 }}>
-              {error}
-            </Typography>
-          )}
           <Button
             type="submit"
             fullWidth
