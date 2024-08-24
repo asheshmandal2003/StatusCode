@@ -20,19 +20,20 @@ model User {
 }
 
 model Profile {
-  id               String    @id @default(uuid())
-  userId           String    @unique
-  user             User      @relation(name: "Profile", fields: [userId], references: [id], onDelete: Cascade)
-  firstName        String
-  lastName         String
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(name: "Profile", fields: [userId], references: [id], onDelete: Cascade)
+  firstName        String?
+  lastName         String?
+  hospitalName     String?
+  bloodBankName    String?
   avatar_url       String
   avatar_public_id String
   phoneNo          String
-  bloodGroup       String
+  bloodGroup       String?
   latitude         Float
   longitude        Float
-  address          Address?  @relation(name: "Address")
-  dateofBirth      DateTime?
+  address          Address? @relation(name: "Address")
 }
 
 model Address {

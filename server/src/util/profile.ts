@@ -1,4 +1,4 @@
-import { Profile, ShortProfile } from "../types/profile";
+import { ShortProfile } from "../types/profile";
 import { prisma } from "./prisma";
 
 export const getProfilesOnMap = async (
