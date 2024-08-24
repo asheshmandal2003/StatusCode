@@ -1,11 +1,13 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Container, IconButton, Menu, MenuItem, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Container, IconButton, Menu, MenuItem, useMediaQuery, useTheme, Avatar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ isAuthenticated, user, onLogout }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [userMenuAnchorEl, setUserMenuAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const userMenuOpen = Boolean(userMenuAnchorEl);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -16,6 +18,14 @@ const Navbar = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleUserMenuOpen = (event) => {
+    setUserMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setUserMenuAnchorEl(null);
   };
 
   return (
@@ -50,6 +60,21 @@ const Navbar = () => {
                 <MenuItem component={Link} to="/register" onClick={handleMenuClose}>Register</MenuItem>
                 <MenuItem component={Link} to="/login" onClick={handleMenuClose}>Login</MenuItem>
                 <MenuItem component={Link} to="/find-donors" onClick={handleMenuClose}>Find Donors</MenuItem>
+                {isAuthenticated && (
+                  <MenuItem onClick={handleUserMenuOpen}>
+                    <Avatar alt={user.name} src={user.profilePicture} sx={{ mr: 1 }} />
+                    {user.name}
+                  </MenuItem>
+                )}
+              </Menu>
+              <Menu
+                id="user-menu"
+                anchorEl={userMenuAnchorEl}
+                open={userMenuOpen}
+                onClose={handleUserMenuClose}
+              >
+                <MenuItem component={Link} to="/profile" onClick={handleUserMenuClose}>Profile</MenuItem>
+                <MenuItem onClick={() => { onLogout(); handleUserMenuClose(); }}>Logout</MenuItem>
               </Menu>
             </>
           ) : (
@@ -66,6 +91,22 @@ const Navbar = () => {
               <Button color="inherit" component={Link} to="/find-donors">
                 Find Donors
               </Button>
+              {isAuthenticated && (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton color="inherit" onClick={handleUserMenuOpen}>
+                    <Avatar alt={user.name} src={user.profilePicture} />
+                  </IconButton>
+                  <Menu
+                    id="user-menu"
+                    anchorEl={userMenuAnchorEl}
+                    open={userMenuOpen}
+                    onClose={handleUserMenuClose}
+                  >
+                    <MenuItem component={Link} to="/profile" onClick={handleUserMenuClose}>Profile</MenuItem>
+                    <MenuItem onClick={() => { onLogout(); handleUserMenuClose(); }}>Logout</MenuItem>
+                  </Menu>
+                </div>
+              )}
             </div>
           )}
         </Toolbar>
