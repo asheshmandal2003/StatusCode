@@ -1,7 +1,7 @@
 export type ShortProfile = {
   id: string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
   avatar_url: string;
   latitude: number;
   longitude: number;
