@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/mydatabase
+    depends_on:
+      - db
+    command: yarn start
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+
+  prisma:
+    image: node:18-alpine
+    volumes:
+      - .:/app
+    working_dir: /app
+    entrypoint: ["yarn", "prisma", "migrate", "deploy"]
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/mydatabase
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

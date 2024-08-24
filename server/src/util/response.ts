@@ -7,12 +7,8 @@ export const handleSuccess = (res: Response, status: number, data: any) => {
 
 export const handleError = (res: Response, error: CustomError) => {
   res
-    .status(error.getStatus() ? error.getStatus() : 500)
-    .json(
-      error.getErrorMessage()
-        ? error.getErrorMessage()
-        : "Internal server error!"
-    );
+    .status(error.status || 500)
+    .json(error.message || "Internal server error!");
 };
 
 export const sendData = (res: Response, data: any) => {

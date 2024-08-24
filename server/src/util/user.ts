@@ -23,11 +23,14 @@ export const getUserByEmail = async (
     },
     select: {
       id: true,
-      firstName: true,
-      lastName: true,
       email: true,
       password: true,
       role: true,
+      profile: {
+        select: {
+          id: true,
+        },
+      },
     },
   });
 };

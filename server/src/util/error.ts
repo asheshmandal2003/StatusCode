@@ -1,18 +1,10 @@
 import e from "express";
 
 export class CustomError extends Error {
-  private status: number;
+  public status: number;
   constructor(status: number, message: string) {
     super(message);
     this.status = status;
-  }
-
-  public getStatus(): number {
-    return this.status;
-  }
-
-  public getErrorMessage(): string {
-    return this.message;
   }
 }
 

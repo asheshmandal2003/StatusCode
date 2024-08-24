@@ -1,8 +1,12 @@
 export type User = {
   id: string;
-  firstName?: string;
-  lastName?: string;
   email?: string;
   password?: string;
   role?: string;
+  profile?:
+    | {
+        id: string;
+      }
+    | null
+    | undefined;
 };

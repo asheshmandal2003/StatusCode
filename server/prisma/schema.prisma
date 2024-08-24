@@ -9,18 +9,57 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
-  firstName String
-  lastName  String
+  profile   Profile? @relation(name: "Profile")
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  role      role     @default(USER)
+  role      Role     @default(DONOR)
 
   @@index([email])
 }
 
-enum role {
+model Profile {
+  id               String    @id @default(uuid())
+  userId           String    @unique
+  user             User      @relation(name: "Profile", fields: [userId], references: [id], onDelete: Cascade)
+  firstName        String
+  lastName         String
+  avatar_url       String
+  avatar_public_id String
+  phoneNo          String
+  bloodGroup       String
+  latitude         Float
+  longitude        Float
+  address          Address?  @relation(name: "Address")
+  dateofBirth      DateTime?
+}
+
+model Address {
+  id        String  @id @default(uuid())
+  profileId String  @unique
+  profile   Profile @relation(name: "Address", fields: [profileId], references: [id], onDelete: Cascade)
+  address   String
+  city      String
+  district  String
+  state     String
+  zipCode   Int
+}
+
+enum Role {
+  DONOR
+  HOSPITAL
+  BLOOD_BANK
   ADMIN
-  USER
+}
+
+enum BloodGroup {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
 }

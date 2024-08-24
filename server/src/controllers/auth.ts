@@ -17,8 +17,6 @@ export const register = async (req: Request, res: Response) => {
     const hash = await createHash(password);
     const newUser = await prisma.user.create({
       data: {
-        firstName,
-        lastName,
         email,
         password: hash,
         role,
@@ -57,10 +55,9 @@ export const login = async (req: Request, res: Response) => {
 
     const resData = {
       id: user?.id,
-      first_name: user?.firstName,
-      last_name: user?.lastName,
       email: user?.email,
       role: user?.role,
+      profile: user?.profile,
     };
     return sendData(res, resData);
   } catch (error: any) {
