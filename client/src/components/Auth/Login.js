@@ -4,18 +4,22 @@ import {
   Button,
   Typography,
   Container,
-  Box,
   IconButton,
   InputAdornment,
   FormControl,
   InputLabel,
   OutlinedInput,
   FormHelperText,
+  Paper,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { login } from "../../state/auth";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email address").required("Required"),
@@ -26,16 +30,33 @@ const validationSchema = Yup.object({
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
 
-  const handleSubmit = (values) => {};
+  const handleSubmit = async (values) => {
+    await axios({
+      method: "POST",
+      url: `${process.env.REACT_APP_SERVER_URL}/api/v1/auth/login`,
+      data: values,
+    })
+      .then((res) => {
+        dispatch(login({ user: res.data }));
+        navigate("/home");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box
+      <Paper
         sx={{
+          width: 400,
+          padding: 3,
           marginTop: 8,
           display: "flex",
           flexDirection: "column",
@@ -43,10 +64,7 @@ const Login = () => {
         }}
       >
         <Typography component="h1" variant="h5">
-          Register / Login
-        </Typography>
-        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-          Please enter your email and password to register or log in.
+          Login
         </Typography>
         <Formik
           initialValues={{ email: "", password: "" }}
@@ -105,15 +123,15 @@ const Login = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                color="primary"
+                color="error"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Register / Login
+                Login
               </Button>
             </Form>
           )}
         </Formik>
-      </Box>
+      </Paper>
     </Container>
   );
 };

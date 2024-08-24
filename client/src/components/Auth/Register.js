@@ -6,43 +6,76 @@ import {
   Button,
   Typography,
   Container,
-  Box,
   IconButton,
   InputAdornment,
   FormControl,
   InputLabel,
   OutlinedInput,
   FormHelperText,
+  Paper,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { login } from "../../state/auth";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object({
     email: Yup.string()
       .email("Please enter a valid email address")
       .required("Email is required"),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters long")
-      .required("Password is required"),
+      .required("Password is required")
+      .min(8, "Password must be at least 8 characters long")
+      .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+      .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .matches(/\d/, "Password must contain at least one number")
+      .matches(
+        /[@$!%*?&]/,
+        "Password must contain at least one special character"
+      ),
   });
 
   const formik = useFormik({
     initialValues: {
+      role: "DONOR",
       email: "",
       password: "",
-    }
+    },
+    onSubmit: (values) => register(values),
+    validationSchema,
   });
+
+  async function register(values) {
+    await axios({
+      method: "POST",
+      url: `${process.env.REACT_APP_SERVER_URL}/api/v1/auth/register`,
+      data: values,
+    })
+      .then((res) => {
+        dispatch(login({ user: res.data }));
+        navigate("/profile");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box
+      <Paper
         sx={{
+          width: 400,
+          padding: 3,
           marginTop: 8,
           display: "flex",
           flexDirection: "column",
@@ -79,6 +112,7 @@ const Register = () => {
             <InputLabel htmlFor="password">Password</InputLabel>
             <OutlinedInput
               id="password"
+              name="password"
               type={showPassword ? "text" : "password"}
               value={formik.values.password}
               onChange={formik.handleChange}
@@ -105,13 +139,13 @@ const Register = () => {
             type="submit"
             fullWidth
             variant="contained"
-            color="primary"
+            color="error"
             sx={{ mt: 3, mb: 2 }}
           >
             Register
           </Button>
         </form>
-      </Box>
+      </Paper>
     </Container>
   );
 };
