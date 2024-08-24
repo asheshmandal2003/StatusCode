@@ -1,8 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TextField, Button, Typography, Container, Box, IconButton, InputAdornment, FormControl, InputLabel, OutlinedInput, FormHelperText } from "@mui/material";
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import {
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Box,
+  IconButton,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  FormHelperText,
+} from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import axios from "axios";
 
 const Register = () => {
@@ -52,14 +64,25 @@ const Register = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box sx={{ marginTop: 8, display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <Typography component="h1" variant="h5">
           Register
         </Typography>
         <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-          Please fill in the form below to create a new account. Ensure that your password is at least 6 characters long.
+          Please fill in the form below to create a new account. Ensure that
+          your password is at least 6 characters long.
         </Typography>
-        <form onSubmit={handleSubmit} style={{ width: "100%", marginTop: "1rem" }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ width: "100%", marginTop: "1rem" }}
+        >
           <TextField
             variant="outlined"
             margin="normal"
@@ -100,7 +123,7 @@ const Register = () => {
             <InputLabel htmlFor="password">Password</InputLabel>
             <OutlinedInput
               id="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               endAdornment={
@@ -121,8 +144,18 @@ const Register = () => {
               {passwordError}
             </FormHelperText>
           </FormControl>
-          {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
-          <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 3, mb: 2 }}>
+          {error && (
+            <Typography color="error" sx={{ mt: 1 }}>
+              {error}
+            </Typography>
+          )}
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ mt: 3, mb: 2 }}
+          >
             Register
           </Button>
         </form>

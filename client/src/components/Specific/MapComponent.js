@@ -1,29 +1,20 @@
 import React, { useEffect, useRef } from "react";
-import mapboxgl from 'mapbox-gl';
+import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-const users = [
-  {
-    name: "Ashesh Mandal",
-    coordinates: [-77.038659, 38.931567],
-  },
-  {
-    name: "Arnab Das",
-    coordinates: [-77.043444, 38.909664],
-  },
-];
+const users = [];
 
 const MapComponent = () => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
 
   useEffect(() => {
-    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+    mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
-      center: [-77.04, 38.907],
+      center: [88.434509, 22.975084],
       zoom: 11.15,
     });
 
