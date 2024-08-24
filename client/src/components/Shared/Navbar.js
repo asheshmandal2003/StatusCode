@@ -57,7 +57,6 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
                 onClose={handleMenuClose}
               >
                 <MenuItem component={Link} to="/" onClick={handleMenuClose}>Home</MenuItem>
-                <MenuItem component={Link} to="/register" onClick={handleMenuClose}>Register</MenuItem>
                 <MenuItem component={Link} to="/login" onClick={handleMenuClose}>Login</MenuItem>
                 <MenuItem component={Link} to="/find-donors" onClick={handleMenuClose}>Find Donors</MenuItem>
                 {isAuthenticated && (
@@ -81,9 +80,6 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
             <div style={{ display: 'flex', flexGrow: 1 }}>
               <Button color="inherit" component={Link} to="/" sx={{ mr: 2 }}>
                 Home
-              </Button>
-              <Button color="inherit" component={Link} to="/register" sx={{ mr: 2 }}>
-                Register
               </Button>
               <Button color="inherit" component={Link} to="/login" sx={{ mr: 2 }}>
                 Login

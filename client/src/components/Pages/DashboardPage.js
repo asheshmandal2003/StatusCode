@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Container,
   Typography,
@@ -15,38 +15,39 @@ import {
   IconButton,
   Tooltip
 } from '@mui/material';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ActivityIcon from '@mui/icons-material/Timeline';
 
 const Dashboard = () => {
-  const [user, setUser] = useState({});
-  const [profile, setProfile] = useState({});
-  const [activities, setActivities] = useState([]);
-  const [notifications, setNotifications] = useState([]);
-  const navigate = useNavigate();
+  const profile = {
+    firstName: 'John',
+    lastName: 'Doe',
+    avatar_url: 'https://via.placeholder.com/80',
+    phoneNo: '123-456-7890',
+    address: {
+      address: '123 Main St',
+      city: 'Anytown',
+      state: 'CA',
+      zipCode: '12345'
+    },
+    bloodGroup: 'O+',
+    dateofBirth: '1990-01-01'
+  };
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/user/profile`);
-        setUser(userResponse.data.user);
-        setProfile(userResponse.data.profile);
+  const user = {
+    email: 'john.doe@example.com'
+  };
 
-        const activitiesResponse = await axios.get(`${process.env.REACT_APP_API_URL}/user/activities`);
-        setActivities(activitiesResponse.data);
+  const activities = [
+    { title: 'Activity 1', description: 'Description of activity 1' },
+    { title: 'Activity 2', description: 'Description of activity 2' }
+  ];
 
-        const notificationsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/user/notifications`);
-        setNotifications(notificationsResponse.data);
-      } catch (error) {
-        console.error("Error fetching dashboard data", error);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
+  const notifications = [
+    { title: 'Notification 1', message: 'Message of notification 1' },
+    { title: 'Notification 2', message: 'Message of notification 2' }
+  ];
 
   return (
     <Container component="main" maxWidth="lg">
@@ -64,7 +65,7 @@ const Dashboard = () => {
                 subheader={user.email}
                 action={
                   <Tooltip title="Edit Profile">
-                    <IconButton onClick={() => navigate('/profile')}>
+                    <IconButton>
                       <EditIcon />
                     </IconButton>
                   </Tooltip>
@@ -128,7 +129,7 @@ const Dashboard = () => {
         </Grid>
 
         <Box sx={{ marginTop: 4, display: 'flex', justifyContent: 'center' }}>
-          <Button variant="contained" color="primary" onClick={() => navigate('/profile')}>
+          <Button variant="contained" color="primary">
             Edit Profile
           </Button>
         </Box>
