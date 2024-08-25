@@ -101,13 +101,24 @@ const Navbar = () => {
                     </MenuItem>
                   </>
                 )}
-                <MenuItem
-                  component={Link}
-                  to="/find-donors"
-                  onClick={handleMenuClose}
-                >
-                  Find Donors
-                </MenuItem>
+                {user && user.role === "HOSPITAL" && (
+                  <MenuItem
+                    component={Link}
+                    to="/find-donors"
+                    onClick={handleMenuClose}
+                  >
+                    Find Donors
+                  </MenuItem>
+                )}
+                {user && user.role === "DONOR" && (
+                  <MenuItem
+                    component={Link}
+                    to="/req-blood"
+                    onClick={handleMenuClose}
+                  >
+                    Search Blood
+                  </MenuItem>
+                )}
                 {user && (
                   <MenuItem onClick={handleUserMenuOpen}>
                     <Avatar
@@ -160,10 +171,19 @@ const Navbar = () => {
                   </Button>
                 </>
               )}
-              {user && (
+              {user && user.role === "HOSPITAL" && (
                 <Button color="inherit" component={Link} to="/find-donors">
                   Find Donors
                 </Button>
+              )}
+              {user && user.role === "DONOR" && (
+                <MenuItem
+                  component={Link}
+                  to="/req-blood"
+                  onClick={handleMenuClose}
+                >
+                  Search Blood
+                </MenuItem>
               )}
               {user && (
                 <div style={{ display: "flex", marginLeft: "auto" }}>

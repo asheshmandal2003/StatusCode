@@ -49,7 +49,7 @@ const Login = () => {
             user: {
               id: res.data.id,
               email: res.data.email,
-              role: res.data.email,
+              role: res.data.role,
             },
             profile: res.data.profile,
           })

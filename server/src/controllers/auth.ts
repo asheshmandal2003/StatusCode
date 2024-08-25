@@ -48,6 +48,8 @@ export const login = async (req: Request, res: Response) => {
       badRequestError("User does not exist!");
     }
 
+    console.log(user);
+
     const isCorrect = await compareHash(password, user?.password as string);
     if (!isCorrect) {
       unauthorizedError("Invalid password!");
