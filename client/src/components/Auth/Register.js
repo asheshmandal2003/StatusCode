@@ -13,6 +13,9 @@ import {
   OutlinedInput,
   FormHelperText,
   Paper,
+  Box,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -23,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [role, setRole] = useState("DONOR");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -44,7 +48,7 @@ const Register = () => {
 
   const formik = useFormik({
     initialValues: {
-      role: "DONOR",
+      role: "",
       email: "",
       password: "",
     },
@@ -53,6 +57,12 @@ const Register = () => {
   });
 
   async function register(values) {
+    if (role === "DONOR") {
+      values["role"] = "DONOR";
+    }
+    if (role === "HOSPITAL") {
+      values["role"] = "HOSPITAL";
+    }
     await axios({
       method: "POST",
       url: `${process.env.REACT_APP_SERVER_URL}/api/v1/auth/register`,
@@ -69,6 +79,10 @@ const Register = () => {
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
+
+  const handleChange = (event) => {
+    setRole(event.target.value);
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -89,6 +103,21 @@ const Register = () => {
           onSubmit={formik.handleSubmit}
           style={{ width: "100%", marginTop: "1rem" }}
         >
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">
+              Registration Type
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={role}
+              label="Registration Type"
+              onChange={handleChange}
+            >
+              <MenuItem value={"DONOR"}>Donor</MenuItem>
+              <MenuItem value={"HOSPITAL"}>Hospital</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
             variant="outlined"
             margin="normal"

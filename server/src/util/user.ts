@@ -29,6 +29,25 @@ export const getUserByEmail = async (
       profile: {
         select: {
           id: true,
+          firstName: true,
+          lastName: true,
+          phoneNo: true,
+          latitude: true,
+          longitude: true,
+          avatar_url: true,
+          avatar_public_id: true,
+          hospitalName: true,
+          bloodGroup: true,
+          bloodBankName: true,
+          address: {
+            select: {
+              address: true,
+              district: true,
+              city: true,
+              state: true,
+              zipCode: true,
+            },
+          },
         },
       },
     },

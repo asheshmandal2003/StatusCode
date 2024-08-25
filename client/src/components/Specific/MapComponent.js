@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import "./map.css";
 
-const users = [];
-
-const MapComponent = () => {
+const MapComponent = ({ donors }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
 
@@ -23,14 +22,22 @@ const MapComponent = () => {
         type: "geojson",
         data: {
           type: "FeatureCollection",
-          features: users.map((user) => ({
+          features: donors.map((donor) => ({
             type: "Feature",
             properties: {
-              description: `<strong>${user.name}</strong>`,
+              description: `
+                <div class="avatar-card">
+                  <img src="${donor.avatar_url}" alt="avatar" class="avatar" />
+                  <div class="details">
+                    <h3 class="name">${donor.firstName} ${donor.lastName}</h3>
+                    <p>${donor.phoneNo}</p>
+                    <p class="location">${donor.address.address}, ${donor.address.city}, ${donor.address.district}</p>
+                  </div>
+                </div>`,
             },
             geometry: {
               type: "Point",
-              coordinates: user.coordinates,
+              coordinates: [donor.longitude, donor.latitude],
             },
           })),
         },
@@ -72,7 +79,7 @@ const MapComponent = () => {
     });
 
     return () => mapRef.current.remove();
-  }, []);
+  }, [donors]);
 
   return (
     <>

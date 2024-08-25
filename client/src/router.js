@@ -12,27 +12,12 @@ const AppRoutes = () => {
   const user = useSelector((state) => state.user);
   return (
     <Routes>
-      <Route path="/" element={user ? <Home /> : <Navigate to={<Login />} />} />
-      <Route
-        path="/login"
-        element={!user ? <Login /> : <Navigate to={<Home />} />}
-      />
-      <Route
-        path="/register"
-        element={!user ? <Register /> : <Navigate to={<Home />} />}
-      />
-      <Route
-        path="/profile"
-        element={user ? <Profile /> : <Navigate to={<Login />} />}
-      />
-      <Route
-        path="/dashboard"
-        element={user ? <Dashboard /> : <Navigate to={<Login />} />}
-      />
-      <Route
-        path="/find-donors"
-        element={user ? <FindDonorsPage /> : <Navigate to={<Login />} />}
-      />
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/find-donors" element={<FindDonorsPage />} />
     </Routes>
   );
 };

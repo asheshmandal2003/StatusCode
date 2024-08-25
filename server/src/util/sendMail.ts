@@ -23,6 +23,7 @@ export const sendEmail = async (
 ): Promise<void> => {
   await transporter.sendMail({
     to,
+    from: process.env.EMAIL_USER,
     subject,
     text,
     html,

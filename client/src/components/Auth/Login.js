@@ -43,8 +43,18 @@ const Login = () => {
       data: values,
     })
       .then((res) => {
-        dispatch(login({ user: res.data }));
-        navigate("/home");
+        console.log(res.data);
+        dispatch(
+          login({
+            user: {
+              id: res.data.id,
+              email: res.data.email,
+              role: res.data.email,
+            },
+            profile: res.data.profile,
+          })
+        );
+        navigate("/");
       })
       .catch((err) => {
         console.error(err);

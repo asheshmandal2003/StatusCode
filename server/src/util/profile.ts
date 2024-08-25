@@ -1,4 +1,4 @@
-import { ShortProfile } from "../types/profile";
+import { Profile } from "../types/profile";
 import { prisma } from "./prisma";
 
 export const getProfilesOnMap = async (
@@ -7,7 +7,7 @@ export const getProfilesOnMap = async (
   longitude: number,
   bloodGroup: string,
   state: string
-): Promise<ShortProfile[] | null> => {
+): Promise<Profile[] | null> => {
   const profiles = await prisma.profile.findMany({
     select: {
       id: true,
@@ -17,9 +17,25 @@ export const getProfilesOnMap = async (
       latitude: true,
       longitude: true,
       phoneNo: true,
+      user: {
+        select: {
+          email: true,
+        },
+      },
+      address: {
+        select: {
+          address: true,
+          city: true,
+          district: true,
+          zipCode: true,
+        },
+      },
     },
     where: {
       bloodGroup: bloodGroup,
+      user: {
+        role: "DONOR",
+      },
       address: {
         state,
       },

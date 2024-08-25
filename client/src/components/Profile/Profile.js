@@ -18,24 +18,37 @@ import { CloudUploadOutlined, EditOutlined } from "@mui/icons-material";
 import { login } from "../../state/auth";
 import { useNavigate } from "react-router-dom";
 
-const validationSchema = Yup.object({
-  firstName: Yup.string().required("Required"),
-  lastName: Yup.string().required("Required"),
-  phoneNo: Yup.string().required("Required"),
-  bloodGroup: Yup.string().required("Required"),
-  address: Yup.string().required("Required"),
-  city: Yup.string().required("Required"),
-  district: Yup.string().required("Required"),
-  state: Yup.string().required("Required"),
-  zipCode: Yup.string().required("Required"),
-  image: Yup.mixed().required("Required"),
-});
-
 const Profile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const validationSchema = Yup.object({
+    firstName: Yup.string().when("user.role", {
+      is: "DONOR",
+      then: Yup.string().required("Donor Name is required"),
+    }),
+    lastName: Yup.string().when("user.role", {
+      is: "DONOR",
+      then: Yup.string().required("Donor Name is required"),
+    }),
+    hospitalName: Yup.string().when("user.role", {
+      is: "HOSPITAL",
+      then: Yup.string().required("Hospital Name is required"),
+    }),
+    phoneNo: Yup.string().required("Required"),
+    bloodGroup: Yup.string().when("user.role", {
+      is: "DONOR",
+      then: Yup.string().required("Required"),
+    }),
+    address: Yup.string().required("Required"),
+    city: Yup.string().required("Required"),
+    district: Yup.string().required("Required"),
+    state: Yup.string().required("Required"),
+    zipCode: Yup.string().required("Required"),
+    image: Yup.mixed().required("Required"),
+  });
 
   const getCoordinates = (address) => {
     return new Promise((resolve, reject) => {
@@ -74,11 +87,16 @@ const Profile = () => {
     formData.append("latitude", coordinates.latitude);
     formData.append("longitude", coordinates.longitude);
 
+    console.log(...formData);
+
     if (coordinates) {
       try {
         const response = await axios({
           method: "POST",
-          url: `${process.env.REACT_APP_SERVER_URL}/api/v1/user/${user.id}/profile`,
+          url:
+            user.role === "DONOR"
+              ? `${process.env.REACT_APP_SERVER_URL}/api/v1/user/${user.id}/profile`
+              : `${process.env.REACT_APP_SERVER_URL}/api/v1/user/${user.id}/profile/create`,
           data: formData,
         });
         dispatch(login({ user, profile: response.data }));
@@ -113,6 +131,7 @@ const Profile = () => {
         </Typography>
         <Formik
           initialValues={{
+            hospitalName: "",
             firstName: "",
             lastName: "",
             phoneNo: "",
@@ -140,44 +159,63 @@ const Profile = () => {
             touched,
           }) => (
             <Form style={{ width: "100%", marginTop: "1rem" }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "1rem",
-                }}
-              >
+              {user.role === "HOSPITAL" && (
                 <Field
                   as={TextField}
                   variant="outlined"
                   margin="normal"
                   required
                   fullWidth
-                  id="firstName"
-                  label="First Name"
-                  name="firstName"
+                  id="hospitalName"
+                  label="Hospital Name"
+                  name="hospitalName"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.firstName}
-                  helperText={<ErrorMessage name="firstName" />}
-                  error={touched.firstName && Boolean(errors.firstName)}
+                  value={values.hospitalName}
+                  helperText={<ErrorMessage name="hospitalName" />}
+                  error={touched.hospitalName && Boolean(errors.hospitalName)}
                 />
-                <Field
-                  as={TextField}
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.lastName}
-                  helperText={<ErrorMessage name="lastName" />}
-                  error={touched.lastName && Boolean(errors.lastName)}
-                />
-              </Box>
+              )}
+              {user.role === "DONOR" && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "1rem",
+                  }}
+                >
+                  <Field
+                    as={TextField}
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="firstName"
+                    label="First Name"
+                    name="firstName"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.firstName}
+                    helperText={<ErrorMessage name="firstName" />}
+                    error={touched.firstName && Boolean(errors.firstName)}
+                  />
+                  <Field
+                    as={TextField}
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="lastName"
+                    label="Last Name"
+                    name="lastName"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.lastName}
+                    helperText={<ErrorMessage name="lastName" />}
+                    error={touched.lastName && Boolean(errors.lastName)}
+                  />
+                </Box>
+              )}
               <Field
                 as={TextField}
                 variant="outlined"
@@ -193,31 +231,33 @@ const Profile = () => {
                 helperText={<ErrorMessage name="phoneNo" />}
                 error={touched.phoneNo && Boolean(errors.phoneNo)}
               />
-              <Field
-                as={TextField}
-                select
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="bloodGroup"
-                label="Blood Group"
-                name="bloodGroup"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.bloodGroup}
-                helperText={<ErrorMessage name="bloodGroup" />}
-                error={touched.bloodGroup && Boolean(errors.bloodGroup)}
-              >
-                <MenuItem value="A_POSITIVE">A+</MenuItem>
-                <MenuItem value="B_POSITIVE">B+</MenuItem>
-                <MenuItem value="O_POSITIVE">O+</MenuItem>
-                <MenuItem value="AB_POSITIVE">AB+</MenuItem>
-                <MenuItem value="A_NEGATIVE">A-</MenuItem>
-                <MenuItem value="B_NEGATIVE">B-</MenuItem>
-                <MenuItem value="O_NEGATIVE">O-</MenuItem>
-                <MenuItem value="AB_NEGATIVE">AB-</MenuItem>
-              </Field>
+              {user.role === "DONOR" && (
+                <Field
+                  as={TextField}
+                  select
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="bloodGroup"
+                  label="Blood Group"
+                  name="bloodGroup"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.bloodGroup}
+                  helperText={<ErrorMessage name="bloodGroup" />}
+                  error={touched.bloodGroup && Boolean(errors.bloodGroup)}
+                >
+                  <MenuItem value="A_POSITIVE">A+</MenuItem>
+                  <MenuItem value="B_POSITIVE">B+</MenuItem>
+                  <MenuItem value="O_POSITIVE">O+</MenuItem>
+                  <MenuItem value="AB_POSITIVE">AB+</MenuItem>
+                  <MenuItem value="A_NEGATIVE">A-</MenuItem>
+                  <MenuItem value="B_NEGATIVE">B-</MenuItem>
+                  <MenuItem value="O_NEGATIVE">O-</MenuItem>
+                  <MenuItem value="AB_NEGATIVE">AB-</MenuItem>
+                </Field>
+              )}
               <Field
                 as={TextField}
                 variant="outlined"

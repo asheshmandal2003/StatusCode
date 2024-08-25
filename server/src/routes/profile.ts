@@ -6,10 +6,8 @@ import {
 } from "../controllers/profile";
 import { router } from "../util/router";
 
-router
-  .route("/:userId/profile")
-  .get(getProfilesForMap)
-  .post(upload.single("image"), createProfile);
+router.route("/:userId/profiles").post(getProfilesForMap);
+router.route("/:userId/profile").post(upload.single("image"), createProfile);
 router
   .route("/:userId/profile/create")
   .post(upload.single("image"), createHospitalProfile);

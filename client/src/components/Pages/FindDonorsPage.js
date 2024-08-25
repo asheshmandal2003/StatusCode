@@ -1,73 +1,60 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Typography,
   Button,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  CardActions,
   Box,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Divider,
+  Stack,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import MapComponent from "../Specific/MapComponent";
-
-const sampleDonors = [
-  {
-    id: 1,
-    name: "John Doe",
-    bloodType: "A+",
-    location: "New York",
-    image: "/default-avatar.png",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    bloodType: "B-",
-    location: "Los Angeles",
-    image: "/default-avatar.png",
-  },
-  {
-    id: 3,
-    name: "Emily Johnson",
-    bloodType: "O+",
-    location: "Chicago",
-    image: "/default-avatar.png",
-  },
-];
+import { useSelector } from "react-redux";
+import DonorCard from "../common/DonorCard";
 
 const FindDonorsPage = () => {
   const [bloodType, setBloodType] = useState(() => "O_POSITIVE");
+  const [donors, setDonors] = useState([]);
+  const user = useSelector((state) => state.user);
+  const profile = useSelector((state) => state.profile);
 
   const handleChange = (event) => {
     setBloodType(event.target.value);
   };
-  const [donors, setDonors] = useState(sampleDonors);
-  const [filteredDonors, setFilteredDonors] = useState(sampleDonors);
 
-  useEffect(() => {
-    axios
-      .get("/api/donors")
+  async function fetchDonors() {
+    if (!profile) {
+      return;
+    }
+    const formdata = new FormData();
+    formdata.append("latitude", profile.latitude);
+    formdata.append("longitude", profile.longitude);
+    formdata.append("state", profile.address.state);
+    formdata.append("bloodGroup", bloodType);
+    await axios({
+      method: "POST",
+      url: `${process.env.REACT_APP_SERVER_URL}/api/v1/user/${user.id}/profiles?reqDistance=10`,
+      data: formdata,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => {
-        setDonors(response.data);
-        setFilteredDonors(response.data);
+        console.log(response.data);
+        setDonors(response.data ? response.data : []);
       })
-      .catch((error) => console.error("Error fetching donor data:", error));
-  }, []);
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   return (
     <Container maxWidth="lg" sx={{ mt: 6 }}>
-      <MapComponent />
-
-      <Divider sx={{ my: 8 }} />
-
       <Typography variant="h2" align="center" gutterBottom>
         Find Blood Donors
       </Typography>
@@ -100,51 +87,21 @@ const FindDonorsPage = () => {
             <MenuItem value={"AB_NEGATIVE"}>AB-</MenuItem>
           </Select>
         </FormControl>
-        <Button variant="contained" color="primary" startIcon={<SearchIcon />}>
+        <Button
+          variant="contained"
+          color="error"
+          startIcon={<SearchIcon />}
+          onClick={fetchDonors}
+        >
           Search
         </Button>
       </Box>
-      <Grid container spacing={4}>
-        {filteredDonors.length > 0 ? (
-          filteredDonors.map((donor) => (
-            <Grid item xs={12} sm={6} md={4} key={donor.id}>
-              <Card
-                sx={{
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  alt={donor.name}
-                  height="140"
-                  image={donor.image}
-                />
-                <CardContent>
-                  <Typography variant="h5">{donor.name}</Typography>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Blood Type: {donor.bloodType}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Location: {donor.location}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small" color="primary">
-                    Contact
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))
-        ) : (
-          <Grid item xs={12}>
-            <Typography variant="h6" align="center" color="textSecondary">
-              No donors found matching your criteria.
-            </Typography>
-          </Grid>
-        )}
-      </Grid>
+      <MapComponent donors={donors} />
+
+      <Divider sx={{ my: 8 }} />
+      <Stack rowGap={3}>
+        {donors && donors.map((donor) => <DonorCard donor={donor} />)}
+      </Stack>
     </Container>
   );
 };

@@ -17,6 +17,7 @@ export const sendMessage = async (req: Request, res: Response) => {
 export const sendMailToDonor = async (req: Request, res: Response) => {
   try {
     const { to, firstName, lastName, hospitalName } = req.body;
+    console.log(to, firstName, lastName, hospitalName);
     const message = `Hello ${firstName} ${lastName},\n\nYou have been requested to donate blood at ${hospitalName}. Please contact the hospital for more details.`;
     await sendEmail(to, "Blood Required!", message);
     return sendData(res, "Message sent successfully");

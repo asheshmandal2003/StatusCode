@@ -1,4 +1,4 @@
-export type ShortProfile = {
+export type Profile = {
   id: string;
   firstName: string | null;
   lastName: string | null;
@@ -6,25 +6,15 @@ export type ShortProfile = {
   latitude: number;
   longitude: number;
   phoneNo: string;
-};
-
-export type Profile = {
-  id: string;
   user: {
     email: string;
   };
-  firstName: string;
-  lastName: string;
-  avatar_url: string;
-  phoneNo: string;
-  bloodGroup: string;
   address:
     | {
         address: string;
         city: string;
         district: string;
-        state: string;
-        zip: number;
+        zipCode: number;
       }
     | null
     | undefined;

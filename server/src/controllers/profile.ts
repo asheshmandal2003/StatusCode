@@ -9,6 +9,7 @@ export const getProfilesForMap = async (req: Request, res: Response) => {
   try {
     const { longitude, latitude, bloodGroup, state } = req.body;
     const { reqDistance } = req.query;
+    console.log(latitude, longitude, bloodGroup, state, reqDistance);
     const distance = Number(reqDistance);
     if (!distance) {
       badRequestError("Enter a valid distance!");
@@ -110,6 +111,10 @@ export const createHospitalProfile = async (req: Request, res: Response) => {
     }
     const { url, publicId } = await uploadImg(req.file?.buffer as Buffer);
 
+    const lat: number = parseFloat(latitude);
+    const long: number = parseFloat(longitude);
+    const zip: number = parseInt(zipCode);
+
     const profile = await prisma.profile.create({
       data: {
         userId,
@@ -117,15 +122,15 @@ export const createHospitalProfile = async (req: Request, res: Response) => {
         avatar_url: url as string,
         avatar_public_id: publicId as string,
         phoneNo,
-        latitude,
-        longitude,
+        latitude: lat,
+        longitude: long,
         address: {
           create: {
             address,
             city,
             district,
             state,
-            zipCode,
+            zipCode: zip,
           },
         },
       },

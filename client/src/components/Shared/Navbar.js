@@ -13,13 +13,19 @@ import {
   Avatar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../state/auth";
 
-const Navbar = ({ isAuthenticated, user, onLogout }) => {
+const Navbar = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [userMenuAnchorEl, setUserMenuAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const userMenuOpen = Boolean(userMenuAnchorEl);
+  const user = useSelector((state) => state.user);
+  const profile = useSelector((state) => state.profile);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -38,6 +44,12 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
 
   const handleUserMenuClose = () => {
     setUserMenuAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleUserMenuClose();
+    dispatch(logout());
+    navigate("/login");
   };
 
   return (
@@ -71,20 +83,24 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
                 <MenuItem component={Link} to="/" onClick={handleMenuClose}>
                   Home
                 </MenuItem>
-                <MenuItem
-                  component={Link}
-                  to="/register"
-                  onClick={handleMenuClose}
-                >
-                  Register
-                </MenuItem>
-                <MenuItem
-                  component={Link}
-                  to="/login"
-                  onClick={handleMenuClose}
-                >
-                  Login
-                </MenuItem>
+                {!user && (
+                  <>
+                    <MenuItem
+                      component={Link}
+                      to="/register"
+                      onClick={handleMenuClose}
+                    >
+                      Register
+                    </MenuItem>
+                    <MenuItem
+                      component={Link}
+                      to="/login"
+                      onClick={handleMenuClose}
+                    >
+                      Login
+                    </MenuItem>
+                  </>
+                )}
                 <MenuItem
                   component={Link}
                   to="/find-donors"
@@ -92,14 +108,13 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
                 >
                   Find Donors
                 </MenuItem>
-                {isAuthenticated && (
+                {user && (
                   <MenuItem onClick={handleUserMenuOpen}>
                     <Avatar
-                      alt={user.name}
-                      src={user.profilePicture}
+                      alt="avatar"
+                      src={profile ? profile.avatar_url : ""}
                       sx={{ mr: 1 }}
                     />
-                    {user.name}
                   </MenuItem>
                 )}
               </Menu>
@@ -116,14 +131,7 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
                 >
                   Profile
                 </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    onLogout();
-                    handleUserMenuClose();
-                  }}
-                >
-                  Logout
-                </MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </>
           ) : (
@@ -131,29 +139,39 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
               <Button color="inherit" component={Link} to="/" sx={{ mr: 2 }}>
                 Home
               </Button>
-              <Button
-                color="inherit"
-                component={Link}
-                to="/register"
-                sx={{ mr: 2 }}
-              >
-                Register
-              </Button>
-              <Button
-                color="inherit"
-                component={Link}
-                to="/login"
-                sx={{ mr: 2 }}
-              >
-                Login
-              </Button>
-              <Button color="inherit" component={Link} to="/find-donors">
-                Find Donors
-              </Button>
-              {isAuthenticated && (
-                <div style={{ display: "flex", alignItems: "center" }}>
+              {!user && (
+                <>
+                  {" "}
+                  <Button
+                    color="inherit"
+                    component={Link}
+                    to="/register"
+                    sx={{ mr: 2 }}
+                  >
+                    Register
+                  </Button>
+                  <Button
+                    color="inherit"
+                    component={Link}
+                    to="/login"
+                    sx={{ mr: 2 }}
+                  >
+                    Login
+                  </Button>
+                </>
+              )}
+              {user && (
+                <Button color="inherit" component={Link} to="/find-donors">
+                  Find Donors
+                </Button>
+              )}
+              {user && (
+                <div style={{ display: "flex", marginLeft: "auto" }}>
                   <IconButton color="inherit" onClick={handleUserMenuOpen}>
-                    <Avatar alt={user.name} src={user.profilePicture} />
+                    <Avatar
+                      alt="avatar"
+                      src={profile ? profile.avatar_url : ""}
+                    />
                   </IconButton>
                   <Menu
                     id="user-menu"
@@ -168,14 +186,7 @@ const Navbar = ({ isAuthenticated, user, onLogout }) => {
                     >
                       Profile
                     </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        onLogout();
-                        handleUserMenuClose();
-                      }}
-                    >
-                      Logout
-                    </MenuItem>
+                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
                   </Menu>
                 </div>
               )}
